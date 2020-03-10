@@ -6,6 +6,9 @@ var path = require("path");
 
 var fs = require('fs');
 
+var db = require("./db/db.json");
+var id = 1;
+
 // let dbJSON = require("./db/db.json")
 
 // var getNotes = require('./public/assets/js/index')
@@ -48,100 +51,40 @@ app.get("/assets/js/index.js", function(request, response) {
 
 // API routes -----------------------------
 app.get("/api/notes", function(req, res) {
-    fs.readFile("./db/db.json", function(err, notetext) {
-        if (err) throw err;
-        var notes = JSON.parse(notetext);
-        res.json(notes);
+        res.json(db)
     })
-
-});
-// API POST Requests
-// Below code handles when a user submits a form and thus submits data to the server.
-// var Rfile = new Promise(function() {
-//     fs.readFile("./db/db.json", function(err, notetext) {
-//         if (err) throw err;
-//         return notes = JSON.parse(notetext);
-//     })
-// })
+    // API POST Requests
 
 app.post("/api/notes", function(req, res) {
-    // console.log("the active note is: " + req.body)
-    // Rfile.then(function(notes) {
-
-    fs.readFile("./db/db.json", function(err, notetext) {
-        if (err) throw err;
-        var prevNotes = JSON.parse([notetext])
-        var incomingNote = req.body;
-        console.log(prevNotes)
-        console.log([req.body]);
-
-        prevNotes.push(incomingNote)
-            // JSON.stringify(prevNotes)
-        fs.writeFile("./db/db.json", prevNotes, function(err) {
-            if (err) throw err;
-            res.json(prevNotes);
-            // })
-        })
+    req.body.id = id++;
+    db.push(req.body);
+    fs.writeFile("./db/db.json", JSON.stringify(db), function(err) {
+        if (err) {
+            console.log(err);
+        }
     })
+    res.json(db);
+})
 
-
-});
-
-//Delete Items
-
-
-app.delete("/api/notes/:note", function(req, res) {
-    // let newDbJSON = [];
-    // const thisNoteID = req.params.note;
-    // dbJSON.map(note => {
-    //     if (note.id !==notetext thisNoteID) {
-    //         newDbJSON.push(note);
-    //     }
-    // });
-
-    // dbJSON = newDbJSON;
-
-    res.end();
-});
-
-
-app.get("/api/notes", function(req, res) {
-    console.log('there seems to be a problem' + res.json() + "---" + req)
-    fs.readFile("./db/db.json", function(err, notetext) {
-        if (err) throw err;
-        var notes = JSON.parse(notetext);
-        return res.json(notes);
+app.delete("/api/notes/:id", function(req, res) {
+    var id = req.body.id
+    var myObject = { id: id };
+    db.splice(myObject, 1);
+    fs.writeFile("./db/db.json", JSON.stringify(db), function(err) {
+        if (err) {
+            console.log(err);
+        }
     })
+    res.json(db)
+})
 
-});
-
-// app.post("/api/notes", function(req, res) {
-//     fs.writeFile("./db/db.json", function(err, notetext) {
+// app.get("/api/notes", function(req, res) {
+//     fs.readFile("./db/db.json", function(err, notetext) {
 //         if (err) throw err;
-//         var notes = JSON.stringify(notetext);
-//         notes.push(req.body);
-//         res.json(notes);
+//         var notes = JSON.parse(notetext);
+//         return res.json(notes);
 //     })
 
-
-// });
-
-// app.delete("/api/notes/:id", function(req, res) {
-//     let newDbJSON = [];
-//     const thisNoteID = req.params.id;
-//     dbJSON.map(note => {
-//         if (note.id !== thisNoteID) {
-//             newDbJSON.push(note);
-//             fs.writeFile("./db.json", function(err, notetext) {
-//                 var notes = JSON.stringify(notetext);
-//                 return res.json(notes);
-//             })
-//         }
-//     });
-
-//     // dbJSON = newDbJSON;
-
-//     res.end();
 // });
 
 

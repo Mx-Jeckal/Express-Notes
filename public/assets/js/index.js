@@ -55,7 +55,7 @@ var handleNoteSave = function() {
     var newNote = {
         title: $noteTitle.val(),
         text: $noteText.val(),
-        // "id": noteID
+        id: noteID
     };
     noteID++;
     saveNote(newNote).then(function(data) {
